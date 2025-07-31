@@ -238,7 +238,7 @@ const HomePage = () => {
             </form>
           </div>
         </div>
-      )}
+      )}      
     </div>
   );
 };
