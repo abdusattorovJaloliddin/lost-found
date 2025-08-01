@@ -14,7 +14,7 @@ function ContactPage() {
   };
 
   return (
-    <div className="flex justify-center px-4 sm:px-6 md:px-8 py-15">
+    <div className="flex justify-center px-4 sm:px-6 md:px-8 py-35">
       <div className="w-full max-w-screen-sm md:max-w-lg lg:max-w-xl bg-white border shadow-md rounded-2xl p-6 sm:p-8">
         <h2 className="text-2xl sm:text-3xl font-semibold mb-6 text-center text-gray-800">
           Biz bilan bog‘laning
