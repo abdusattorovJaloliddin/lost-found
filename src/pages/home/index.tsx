@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDelete, MdEdit } from "react-icons/md";
@@ -11,10 +11,11 @@ type ItemType = {
   description: string;
   date: string;
   location: string;
-  status: string; 
+  status: string;
 };
 
 const HomePage = () => {
+  
   const [items, setItems] = useState<ItemType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -35,7 +36,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchItems = async () => {
       const res = await axios.get("https://6889fb974c55d5c739547780.mockapi.io/api/v1/items");
-      setItems(res.data);
+      setItems(res?.data);
     };
     fetchItems();
   }, []);
@@ -93,17 +94,15 @@ const HomePage = () => {
     });
   };
 
-  const filteredItems = items
-    .filter(item =>
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .filter(item =>
-      filterStatus === "all" ? true : item.status === filterStatus
-    );
-
+  const filteredItems = items.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      filterStatus === 'all' ? true : filterStatus === 'Yangi' ? item.status !== 'Topshirildi' : item.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
   return (
     <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Lost & Found Board</h1>
+      <h1 className="text-2xl font-bold mt-15">Lost & Found Board</h1>
       <div className="flex gap-4 mb-4">
         <input
           className="border px-4 py-2 rounded w-1/2"
@@ -121,6 +120,13 @@ const HomePage = () => {
           <option value="Topshirildi">Topshirildi</option>
         </select>
       </div>
+
+      <div className="p-4 bg-blue-50 rounded">
+        <article className="text-lg font-medium text-gray-800">
+          Xush kelibsiz! Bu platforma orqali siz topilgan yoki yo‘qolgan buyumlaringizni topishingiz mumkin.
+        </article>
+      </div>
+
       <div className="grid gap-5">
         {filteredItems.map((item) => (
           <div
@@ -140,8 +146,8 @@ const HomePage = () => {
                   <span className="font-medium">Holat:</span>{" "}
                   <span
                     className={`font-semibold ${item.status === "Topshirildi"
-                        ? "text-green-600"
-                        : "text-yellow-600"
+                      ? "text-green-600"
+                      : "text-yellow-600"
                       }`}
                   >
                     {item.status}
@@ -186,6 +192,7 @@ const HomePage = () => {
           </div>
         ))}
       </div>
+
       {modalOpen && editItem && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">
@@ -238,7 +245,7 @@ const HomePage = () => {
             </form>
           </div>
         </div>
-      )}      
+      )}
     </div>
   );
 };

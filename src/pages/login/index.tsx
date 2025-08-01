@@ -6,13 +6,14 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === '1234') {
-      navigate('/home');
-    } else {
-      alert('Login yoki parol noto‘g‘ri');
-    }
-  };
+ const handleLogin = (e: React.FormEvent) => {
+  e.preventDefault(); 
+  if (username === 'admin' && password === '1234') {
+    navigate('/home');
+  } else {
+    alert('Login yoki parol noto‘g‘ri');
+  }
+};
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <form onSubmit={handleLogin} className="bg-white p-8 rounded shadow-md w-80">
