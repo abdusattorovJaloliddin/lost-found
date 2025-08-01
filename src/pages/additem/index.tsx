@@ -73,15 +73,9 @@ function AddItemPage() {
               }
             }}
           />
-          {formData.avatar && (
-            <div className="flex justify-center">
-              <img
-                src={formData.avatar}
-                alt="Tanlangan rasm"
-                className="w-32 h-32 object-cover rounded-xl border border-gray-300"
-              />
-            </div>
-          )}
+          {formData.avatar ? (
+            <img src={formData.avatar} alt="Tanlangan rasm" className="w-32 h-32 object-cover" />
+          ) : null}
           <input
             type="text"
             name="location"
