@@ -15,7 +15,7 @@ type ItemType = {
 };
 
 const HomePage = () => {
-  
+
   const [items, setItems] = useState<ItemType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -36,7 +36,11 @@ const HomePage = () => {
   useEffect(() => {
     const fetchItems = async () => {
       const res = await axios.get("https://6889fb974c55d5c739547780.mockapi.io/api/v1/items");
-      setItems(res?.data);
+      const fixedData = res.data.map((item: any) => ({
+        ...item,
+        islost: item.islost ?? false,
+      }));
+      setItems(fixedData);
     };
     fetchItems();
   }, []);
@@ -93,11 +97,18 @@ const HomePage = () => {
       status: "Topshirildi"
     });
   };
-
   const filteredItems = items.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus =
-      filterStatus === 'all' ? true : filterStatus === 'Yangi' ? item.status !== 'Topshirildi' : item.status === filterStatus;
+    let matchesStatus = true;
+    if (filterStatus === 'Yangi') {
+      matchesStatus = item.status !== 'Topshirildi';
+    } else if (filterStatus === 'Topshirildi') {
+      matchesStatus = item.status === 'Topshirildi';
+    } else if (filterStatus === 'yo‘qolgan') {
+      matchesStatus = item.status === 'yo‘qolgan' || item.islost === true;
+    } else if (filterStatus === 'topilgan') {
+      matchesStatus = item.status === 'topilgan' || item.islost === false;
+    }
     return matchesSearch && matchesStatus;
   });
   return (
@@ -118,15 +129,15 @@ const HomePage = () => {
           <option value="all">Hammasi</option>
           <option value="Yangi">Yangi</option>
           <option value="Topshirildi">Topshirildi</option>
+          <option value="yo‘qolgan">Faqat yo‘qolganlar</option>
+          <option value="topilgan">Faqat topilganlar</option>
         </select>
       </div>
-
       <div className="p-4 bg-blue-50 rounded">
         <article className="text-lg font-medium text-gray-800">
           Xush kelibsiz! Bu platforma orqali siz topilgan yoki yo‘qolgan buyumlaringizni topishingiz mumkin.
         </article>
       </div>
-
       <div className="grid gap-5">
         {filteredItems.map((item) => (
           <div
@@ -153,10 +164,13 @@ const HomePage = () => {
                     {item.status}
                   </span>
                 </p>
-                <p className="text-sm text-gray-500">
-                  <span className="font-medium">Yo‘qotilganmi:</span>{" "}
-                  {item.islost ? "Ha" : "Yo‘q"}
-                </p>
+                {item.status !== "Topshirildi" ? (
+                  <p className="text-sm text-gray-500">
+                    <span className="font-medium">Yo‘qotilganmi:</span>{" "}
+                    {item.islost ? "Ha" : "Yo‘q"}
+                  </p>
+                ) : null}
+
                 <p className="text-sm text-gray-500">
                   <span className="font-medium">Topilgan joyi:</span> {item.location}
                 </p>
@@ -192,7 +206,6 @@ const HomePage = () => {
           </div>
         ))}
       </div>
-
       {modalOpen && editItem && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-md relative">

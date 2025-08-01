@@ -5,13 +5,11 @@ import Footer from '../footer'
 function Layout() {
   return (
     <div>
-      <Header/>
+      <Header />
       <main>
-        <Outlet/>
+        <Outlet />
       </main>
-      <div className='mt-62'>
-        <Footer/>
-      </div>
+      <Footer />
     </div>
   )
 }
