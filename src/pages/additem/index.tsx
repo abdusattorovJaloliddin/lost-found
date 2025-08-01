@@ -12,21 +12,23 @@ function AddItemPage() {
     islost: true,
     description: '',
   });
-
   const navigate = useNavigate();
-
+  
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const { name, value, type } = e.target;
-    const checked = (e.target as HTMLInputElement).checked;
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+) => {
+  const { name, value, type } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-  };
+  const val =
+    type === 'checkbox' && e.target instanceof HTMLInputElement
+      ? e.target.checked
+      : value;
 
+  setFormData((prev) => ({
+    ...prev,
+    [name]: val,
+  }));
+};
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -40,7 +42,19 @@ function AddItemPage() {
       alert('Buyum qo‘shishda xatolik yuz berdi. Iltimos, qaytadan urinib ko‘ring.');
     }
   };
-
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          avatar: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
       <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-2xl">
@@ -59,23 +73,15 @@ function AddItemPage() {
             type="file"
             accept="image/*"
             className="w-full"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    avatar: reader.result as string,
-                  }));
-                };
-                reader.readAsDataURL(file);
-              }
-            }}
+            onChange={handleFileChange}
           />
-          {formData.avatar ? (
-            <img src={formData.avatar} alt="Tanlangan rasm" className="w-32 h-32 object-cover" />
-          ) : null}
+          {formData.avatar?.startsWith("data:image") && (
+            <img
+              src={formData.avatar}
+              alt="Tanlangan rasm"
+              className="w-32 h-32 object-cover rounded"
+            />
+          )}
           <input
             type="text"
             name="location"
@@ -111,6 +117,7 @@ function AddItemPage() {
             <option value="topilgan">Topilgan</option>
             <option value="yo‘qolgan">Yo‘qolgan</option>
           </select>
+
           <label className="flex items-center gap-2 text-sm text-gray-700">
             <input
               type="checkbox"

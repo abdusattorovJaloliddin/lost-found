@@ -15,7 +15,6 @@ type ItemType = {
 };
 
 const HomePage = () => {
-
   const [items, setItems] = useState<ItemType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -32,7 +31,6 @@ const HomePage = () => {
       setEditAvatar(editItem.avatar);
     }
   }, [editItem]);
-
   useEffect(() => {
     const fetchItems = async () => {
       const res = await axios.get("https://6889fb974c55d5c739547780.mockapi.io/api/v1/items");
@@ -44,11 +42,9 @@ const HomePage = () => {
     };
     fetchItems();
   }, []);
-
   const handleDelete = async (id: string) => {
     const confirm = window.confirm("Haqiqatan ham o‘chirmoqchimisiz?");
     if (!confirm) return;
-
     try {
       await axios.delete(`https://6889fb974c55d5c739547780.mockapi.io/api/v1/items/${id}`);
       setItems(items.filter(item => item.id !== id));
@@ -57,12 +53,10 @@ const HomePage = () => {
       toast.error("O‘chirishda xatolik yuz berdi");
     }
   };
-
   const handleEdit = (item: ItemType) => {
     setEditItem(item);
     setModalOpen(true);
   };
-
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editItem) return;
@@ -86,7 +80,6 @@ const HomePage = () => {
       toast.error("Tahrirlashda xatolik");
     }
   };
-
   const handleStatusChange = async (id: string) => {
     const updated = items.map(item =>
       item.id === id ? { ...item, status: "Topshirildi" } : item
@@ -100,14 +93,20 @@ const HomePage = () => {
   const filteredItems = items.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     let matchesStatus = true;
-    if (filterStatus === 'Yangi') {
-      matchesStatus = item.status !== 'Topshirildi';
-    } else if (filterStatus === 'Topshirildi') {
-      matchesStatus = item.status === 'Topshirildi';
-    } else if (filterStatus === 'yo‘qolgan') {
-      matchesStatus = item.status === 'yo‘qolgan' || item.islost === true;
-    } else if (filterStatus === 'topilgan') {
-      matchesStatus = item.status === 'topilgan' || item.islost === false;
+    switch (filterStatus) {
+      case "yo‘qolgan":
+        matchesStatus = item.islost === true && item.status !== "Topshirildi";
+        break;
+      case "topilgan":
+        matchesStatus = item.islost === false && item.status !== "Topshirildi";
+        break;
+      case "topshirildi":
+        matchesStatus = item.status === "Topshirildi";
+        break;
+      case "all":
+      default:
+        matchesStatus = true;
+        break;
     }
     return matchesSearch && matchesStatus;
   });
@@ -127,10 +126,9 @@ const HomePage = () => {
           onChange={e => setFilterStatus(e.target.value)}
         >
           <option value="all">Hammasi</option>
-          <option value="Yangi">Yangi</option>
-          <option value="Topshirildi">Topshirildi</option>
           <option value="yo‘qolgan">Faqat yo‘qolganlar</option>
           <option value="topilgan">Faqat topilganlar</option>
+          <option value="topshirildi">Faqat topshirilganlar</option>
         </select>
       </div>
       <div className="p-4 bg-blue-50 rounded">
@@ -145,11 +143,9 @@ const HomePage = () => {
             className="bg-white rounded-2xl shadow-md p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
           >
             <div className="flex items-start gap-4 flex-1">
-              <img
-                src={item.avatar}
-                alt={item.name}
-                className="w-24 h-24 rounded-xl object-cover border border-gray-300"
-              />
+              {item.avatar && item.avatar.startsWith("data:image") && (
+                <img src={item.avatar} alt="Rasm" className="..." />
+              )}
               <div className="space-y-1">
                 <h2 className="text-xl font-bold text-gray-800">{item.name}</h2>
                 <p className="text-gray-600">{item.description}</p>
