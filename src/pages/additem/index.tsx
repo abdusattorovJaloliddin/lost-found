@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -22,7 +22,6 @@ function AddItemPage() {
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -33,7 +32,6 @@ function AddItemPage() {
       alert("Buyum qo‘shishda xatolik yuz berdi. Iltimos, qaytadan urinib ko‘ring.");
     }
   };
-
   return (
     <div className="container mx-auto px-4 py-15">
       <h2 className="text-2xl font-bold mb-6">Buyum qo‘shish</h2>
@@ -48,14 +46,25 @@ function AddItemPage() {
           required
         />
         <input
-          type="url"
-          name="avatar"
-          placeholder="Rasm URL manzili"
-          className="w-full border p-2 rounded"
-          value={formData.avatar}
-          onChange={handleChange}
-          required
+          type="file"
+          accept="image/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                setFormData(prev => ({
+                  ...prev,
+                  avatar: reader.result as string, 
+                }));
+              };
+              reader.readAsDataURL(file); 
+            }
+          }}
         />
+        {formData.avatar && (
+          <img src={formData.avatar} alt="Tanlangan rasm" className="w-32 h-32 object-cover" />
+        )}
         <input
           type="text"
           name="location"
