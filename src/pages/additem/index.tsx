@@ -56,7 +56,7 @@ function AddItemPage() {
     }
   };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-10">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-20">
       <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-2xl">
         <h2 className="text-3xl font-bold text-center mb-8 text-blue-700">Buyum qo‘shish</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
